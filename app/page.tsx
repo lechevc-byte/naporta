@@ -56,24 +56,27 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Category cards grid */}
-          <div className="hidden lg:grid grid-cols-2 gap-3 w-[280px] flex-shrink-0">
+          {/* Category cards grid — 3x3 */}
+          <div className="hidden lg:grid grid-cols-3 gap-3 flex-shrink-0">
             {[
-              { emoji: '\uD83E\uDD64', name: 'Bebidas', bg: '#DBEAFE' },
-              { emoji: '\uD83D\uDED2', name: 'Mercearia', bg: '#D1FAE5' },
-              { emoji: '\uD83E\uDDC0', name: 'Lacticinios', bg: '#FEF9C3' },
-              { emoji: '\uD83C\uDF7A', name: 'Cervejas', bg: '#FEE2E2' },
-              { emoji: '\uD83E\uDDF4', name: 'Higiene', bg: '#EDE9FE' },
-              { emoji: '\uD83E\uDDF9', name: 'Limpeza', bg: '#FFEDD5' },
+              { emoji: '\uD83D\uDED2', name: 'Todos', bg: '#E0E7FF' },
+              { emoji: '\uD83E\uDD64', name: 'Aguas, sumos', bg: '#DBEAFE', filter: 'Águas, sumos, refrigerantes' },
+              { emoji: '\uD83C\uDF7A', name: 'Cervejas', bg: '#FEE2E2', filter: 'Cervejas e vinhos' },
+              { emoji: '\uD83E\uDD6B', name: 'Mercearia salgada', bg: '#D1FAE5', filter: 'Mercearia salgada' },
+              { emoji: '\uD83C\uDF6B', name: 'Mercearia doce', bg: '#FCE7F3', filter: 'Mercearia doce' },
+              { emoji: '\uD83E\uDDC0', name: 'Lacticinios', bg: '#FEF9C3', filter: 'Lacticínios e queijos' },
+              { emoji: '\uD83E\uDDF4', name: 'Higiene', bg: '#EDE9FE', filter: 'Higiene e beleza' },
+              { emoji: '\uD83E\uDDF9', name: 'Limpeza', bg: '#FFEDD5', filter: 'Limpeza e casa' },
+              { emoji: '\uD83D\uDC76', name: 'Bebe', bg: '#CCFBF1', filter: 'Bebé' },
             ].map((cat) => (
               <a
                 key={cat.name}
                 href="#catalogo"
-                style={{ background: cat.bg, width: '120px', height: '120px' }}
-                className="rounded-2xl shadow-sm flex flex-col items-center justify-center hover:shadow-md transition-shadow cursor-pointer"
+                style={{ background: cat.bg, width: '110px', height: '110px' }}
+                className="rounded-2xl shadow-sm flex flex-col items-center justify-center hover:shadow-md hover:scale-105 transition-all cursor-pointer"
               >
-                <span style={{ fontSize: '40px', lineHeight: 1 }}>{cat.emoji}</span>
-                <span className="text-xs font-bold text-gray-700 mt-2">{cat.name}</span>
+                <span style={{ fontSize: '36px', lineHeight: 1 }}>{cat.emoji}</span>
+                <span className="text-[10px] font-bold text-gray-700 mt-1.5 text-center leading-tight px-1">{cat.name}</span>
               </a>
             ))}
           </div>
