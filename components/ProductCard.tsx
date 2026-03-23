@@ -25,21 +25,24 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <div
-      className={`relative rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col h-full ${
+      style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+      className={`rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden ${
         outOfStock ? 'opacity-40 grayscale pointer-events-none' : ''
-      } ${qty > 0 ? 'ring-1.5 ring-green-300' : ''}`}
+      } ${qty > 0 ? 'ring-2 ring-green-200' : ''}`}
     >
-      {/* Image — fixed 120px height */}
-      <div className="h-[120px] w-full bg-gray-50 flex items-center justify-center overflow-hidden p-2">
+      {/* Image — top, fixed height, NEVER side-by-side */}
+      <div
+        style={{ width: '100%', height: '120px', background: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}
+      >
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
-            className="h-full w-full object-contain"
+            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
             loading="lazy"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-gray-100" />
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#e5e7eb' }} />
         )}
         {outOfStock && (
           <span className="absolute top-1.5 left-1.5 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase">
@@ -48,14 +51,17 @@ export default function ProductCard({ product }: { product: Product }) {
         )}
       </div>
 
-      {/* Content — compact padding */}
-      <div className="p-2 flex flex-col flex-1">
-        <h3 className="text-xs font-medium text-gray-900 line-clamp-2 min-h-[2rem] leading-tight">
+      {/* Content — below image, NEVER beside it */}
+      <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <h3
+          className="text-gray-900 line-clamp-2"
+          style={{ fontSize: '12px', fontWeight: 500, lineHeight: 1.3, minHeight: '2rem', margin: 0 }}
+        >
           {product.name}
         </h3>
 
-        <div className="mt-auto pt-1.5 flex items-end justify-between">
-          <span className="text-sm font-extrabold text-gray-900 leading-none">
+        <div style={{ marginTop: 'auto', paddingTop: '6px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: '14px', fontWeight: 800, color: '#111', lineHeight: 1 }}>
             {formatCVE(product.price)}
           </span>
 
@@ -64,31 +70,31 @@ export default function ProductCard({ product }: { product: Product }) {
               {qty === 0 ? (
                 <button
                   onClick={handleAdd}
-                  className="w-7 h-7 bg-green-600 hover:bg-green-700 active:scale-90 text-white rounded-full flex items-center justify-center transition-all flex-shrink-0"
+                  style={{ width: 28, height: 28, borderRadius: '50%', background: '#16a34a', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
+                    <path d="M12 4v16m8-8H4" />
                   </svg>
                 </button>
               ) : (
-                <div className="flex items-center bg-green-600 rounded-full overflow-hidden flex-shrink-0">
+                <div style={{ display: 'flex', alignItems: 'center', background: '#16a34a', borderRadius: 999, overflow: 'hidden', flexShrink: 0 }}>
                   <button
                     onClick={() => updateQuantity(product.id, qty - 1)}
-                    className="w-7 h-7 text-white hover:bg-green-700 flex items-center justify-center transition-colors"
+                    style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
+                      <path d="M20 12H4" />
                     </svg>
                   </button>
-                  <span className="w-5 text-center text-xs font-bold text-white select-none">
+                  <span style={{ width: 20, textAlign: 'center', fontSize: 12, fontWeight: 700, color: 'white', userSelect: 'none' }}>
                     {qty}
                   </span>
                   <button
                     onClick={handleAdd}
-                    className="w-7 h-7 text-white hover:bg-green-700 flex items-center justify-center transition-colors"
+                    style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
+                      <path d="M12 4v16m8-8H4" />
                     </svg>
                   </button>
                 </div>

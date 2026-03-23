@@ -14,7 +14,6 @@ export default async function HomePage() {
     .order('name')
 
   const p = products || []
-  const featured = p.filter((x) => x.image_url).slice(0, 4)
 
   return (
     <>
@@ -57,21 +56,25 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Featured products grid — desktop only */}
-          <div className="hidden lg:grid grid-cols-2 gap-4 w-[360px] flex-shrink-0">
-            {featured.map((p, i) => (
-              <div
-                key={p.id}
-                className={`bg-white rounded-2xl p-4 shadow-xl border border-gray-100 ${
-                  i === 1 ? '-rotate-2' : i === 2 ? 'rotate-1' : ''
-                }`}
+          {/* Category cards grid */}
+          <div className="hidden lg:grid grid-cols-2 gap-3 w-[280px] flex-shrink-0">
+            {[
+              { emoji: '\uD83E\uDD64', name: 'Bebidas', bg: '#DBEAFE' },
+              { emoji: '\uD83D\uDED2', name: 'Mercearia', bg: '#D1FAE5' },
+              { emoji: '\uD83E\uDDC0', name: 'Lacticinios', bg: '#FEF9C3' },
+              { emoji: '\uD83C\uDF7A', name: 'Cervejas', bg: '#FEE2E2' },
+              { emoji: '\uD83E\uDDF4', name: 'Higiene', bg: '#EDE9FE' },
+              { emoji: '\uD83E\uDDF9', name: 'Limpeza', bg: '#FFEDD5' },
+            ].map((cat) => (
+              <a
+                key={cat.name}
+                href="#catalogo"
+                style={{ background: cat.bg, width: '120px', height: '120px' }}
+                className="rounded-2xl shadow-sm flex flex-col items-center justify-center hover:shadow-md transition-shadow cursor-pointer"
               >
-                <div className="aspect-square bg-gray-50 rounded-xl flex items-center justify-center p-3 mb-2">
-                  <img src={p.image_url!} alt={p.name} className="max-h-full max-w-full object-contain" />
-                </div>
-                <p className="text-xs font-medium text-gray-700 line-clamp-1">{p.name}</p>
-                <p className="text-sm font-extrabold text-gray-900">{p.price.toLocaleString('pt-PT')} CVE</p>
-              </div>
+                <span style={{ fontSize: '40px', lineHeight: 1 }}>{cat.emoji}</span>
+                <span className="text-xs font-bold text-gray-700 mt-2">{cat.name}</span>
+              </a>
             ))}
           </div>
         </div>
