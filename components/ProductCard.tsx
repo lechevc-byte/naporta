@@ -49,13 +49,8 @@ export default function ProductCard({ product }: { product: Product }) {
             </span>
           )}
           {product.is_popular && !hasPromo && (
-            <span className="bg-orange-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+            <span className="bg-green-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
               Popular
-            </span>
-          )}
-          {isNew && !hasPromo && !product.is_popular && (
-            <span className="bg-blue-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
-              Novo
             </span>
           )}
           {outOfStock && (
