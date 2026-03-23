@@ -50,7 +50,8 @@ function AdminContent() {
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <h1 className="text-lg font-bold"><span className="text-brand">NaPorta</span> <span className="text-gray-400 font-normal">Admin</span></h1>
           <div className="flex items-center gap-4">
-            <a href="/admin/products" className="text-sm text-gray-500 hover:text-brand transition-colors">Produtos</a>
+            <a href="/admin/scan" className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">Scan</a>
+            <a href="/admin/products" className="text-sm text-gray-500 hover:text-green-600 transition-colors">Produtos</a>
             <button onClick={async () => { const s = createClient(); await s.auth.signOut(); router.push('/admin/login') }} className="text-sm text-gray-400 hover:text-gray-600">Sair</button>
           </div>
         </div>

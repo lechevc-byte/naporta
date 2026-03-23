@@ -26,6 +26,16 @@
   animation: cart-bounce 0.3s ease-out;
 }
 
+/* Scan line animation */
+@keyframes scan-line {
+  0% { top: 10%; }
+  50% { top: 85%; }
+  100% { top: 10%; }
+}
+.animate-scan {
+  animation: scan-line 2s ease-in-out infinite;
+}
+
 /* Product grid — explicit, no Tailwind ambiguity */
 .product-grid {
   display: grid;
