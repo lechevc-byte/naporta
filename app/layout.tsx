@@ -1,7 +1,10 @@
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import Toast from '@/components/Toast'
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
   title: 'NaPorta — Compras ao domicílio em Praia, Cabo Verde',
@@ -20,11 +23,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt">
+    <html lang="pt" className={inter.variable}>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
-      <body className="antialiased bg-gray-50 text-gray-900">
+      <body className="font-sans antialiased bg-white text-[#1A1A1A]">
         {children}
         <WhatsAppButton />
         <Toast />
