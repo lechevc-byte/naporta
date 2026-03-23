@@ -68,7 +68,7 @@ export default function ProductCard({ product }: { product: Product }) {
             </span>
           )}
           {product.is_popular && !hasPromo && (
-            <span style={{ background: '#16a34a', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4 }}>
+            <span style={{ background: '#2563eb', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4 }}>
               Popular
             </span>
           )}
