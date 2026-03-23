@@ -14,7 +14,6 @@ export default function ProductCard({ product }: { product: Product }) {
   const qty = cartItem?.quantity || 0
   const hasPromo = product.original_price && product.original_price > product.price
   const discount = hasPromo ? Math.round((1 - product.price / product.original_price!) * 100) : 0
-  const isNew = (Date.now() - new Date(product.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000
 
   const handleAdd = () => {
     addItem({
@@ -27,34 +26,54 @@ export default function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <div
-      style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
-      className={`rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden ${
-        outOfStock ? 'opacity-40 grayscale pointer-events-none' : ''
-      } ${qty > 0 ? 'ring-2 ring-green-200' : ''}`}
-    >
+    <div style={{
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      borderRadius: '12px',
+      overflow: 'hidden',
+      border: qty > 0 ? '2px solid #86efac' : '1px solid #f0f0f0',
+      backgroundColor: '#fff',
+      opacity: outOfStock ? 0.4 : 1,
+      filter: outOfStock ? 'grayscale(1)' : 'none',
+      pointerEvents: outOfStock ? 'none' as const : 'auto' as const,
+    }}>
       {/* Image */}
-      <div style={{ width: '100%', height: '120px', background: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
+      <div style={{
+        width: '100%',
+        height: '130px',
+        backgroundColor: '#f9fafb',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        position: 'relative',
+      }}>
         {product.image_url ? (
-          <img src={product.image_url} alt={product.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} loading="lazy" />
+          <img
+            src={product.image_url}
+            alt={product.name}
+            style={{ maxHeight: '110px', maxWidth: '90%', objectFit: 'contain' }}
+            loading="lazy"
+          />
         ) : (
           <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#e5e7eb' }} />
         )}
 
-        {/* Badges top-left */}
-        <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
+        {/* Badges */}
+        <div style={{ position: 'absolute', top: 6, left: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {hasPromo && (
-            <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+            <span style={{ background: '#ef4444', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4 }}>
               -{discount}%
             </span>
           )}
           {product.is_popular && !hasPromo && (
-            <span className="bg-green-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+            <span style={{ background: '#16a34a', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4 }}>
               Popular
             </span>
           )}
           {outOfStock && (
-            <span className="bg-gray-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+            <span style={{ background: '#525252', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4 }}>
               Esgotado
             </span>
           )}
@@ -63,18 +82,18 @@ export default function ProductCard({ product }: { product: Product }) {
 
       {/* Content */}
       <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <h3 className="text-gray-900 line-clamp-2" style={{ fontSize: '12px', fontWeight: 500, lineHeight: 1.3, minHeight: '2rem', margin: 0 }}>
+        <p style={{ fontSize: 12, fontWeight: 500, lineHeight: 1.3, minHeight: '2rem', margin: 0, color: '#111', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>
           {product.name}
-        </h3>
+        </p>
 
-        <div style={{ marginTop: 'auto', paddingTop: '6px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <div style={{ marginTop: 'auto', paddingTop: 6, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
           <div>
             {hasPromo && (
-              <span className="text-gray-400 line-through" style={{ fontSize: '11px', display: 'block', lineHeight: 1 }}>
+              <span style={{ fontSize: 11, color: '#9ca3af', textDecoration: 'line-through', display: 'block', lineHeight: 1 }}>
                 {formatCVE(product.original_price!)}
               </span>
             )}
-            <span style={{ fontSize: '14px', fontWeight: 800, color: hasPromo ? '#dc2626' : '#111', lineHeight: 1 }}>
+            <span style={{ fontSize: 14, fontWeight: 800, color: hasPromo ? '#dc2626' : '#111', lineHeight: 1 }}>
               {formatCVE(product.price)}
             </span>
           </div>
