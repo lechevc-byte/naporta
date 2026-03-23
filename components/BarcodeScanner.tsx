@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { BrowserMultiFormatReader, DecodeHintType, BarcodeFormat, NotFoundException } from '@zxing/library'
 
 interface Props {
   onDetected: (barcode: string) => void
@@ -12,49 +13,70 @@ export default function BarcodeScanner({ onDetected, active }: Props) {
   const lastCode = useRef('')
   const lastTime = useRef(0)
   const [error, setError] = useState('')
-  const readerRef = useRef<any>(null)
+  const readerRef = useRef<BrowserMultiFormatReader | null>(null)
 
   useEffect(() => {
     if (!active) return
 
     let stopped = false
 
-    async function start() {
+    const hints = new Map()
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+      BarcodeFormat.EAN_13,
+      BarcodeFormat.EAN_8,
+      BarcodeFormat.CODE_128,
+      BarcodeFormat.QR_CODE,
+      BarcodeFormat.UPC_A,
+      BarcodeFormat.UPC_E,
+    ])
+    hints.set(DecodeHintType.TRY_HARDER, true)
+
+    const codeReader = new BrowserMultiFormatReader(hints)
+    readerRef.current = codeReader
+
+    async function startScan(exactFacing: boolean) {
+      if (stopped || !videoRef.current) return
+
+      const constraints = {
+        video: {
+          facingMode: exactFacing ? { exact: 'environment' as const } : { ideal: 'environment' as const },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      }
+
       try {
-        const { BrowserMultiFormatReader } = await import('@zxing/browser')
-        const reader = new BrowserMultiFormatReader()
-        readerRef.current = reader
-
-        const devices = await navigator.mediaDevices.enumerateDevices()
-        const videoDevices = devices.filter((d) => d.kind === 'videoinput')
-        // Prefer back camera
-        const backCam = videoDevices.find((d) => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('rear') || d.label.toLowerCase().includes('environment'))
-        const deviceId = backCam?.deviceId || undefined
-
-        if (stopped) return
-
-        await reader.decodeFromVideoDevice(
-          deviceId || undefined,
-          videoRef.current!,
-          (result) => {
-            if (!result) return
-            const code = result.getText()
-            const now = Date.now()
-            // Debounce: ignore same code within 2 seconds
-            if (code === lastCode.current && now - lastTime.current < 2000) return
-            lastCode.current = code
-            lastTime.current = now
-            onDetected(code)
+        await codeReader.decodeFromConstraints(
+          constraints,
+          videoRef.current,
+          (result, err) => {
+            if (result) {
+              const code = result.getText()
+              const now = Date.now()
+              if (code === lastCode.current && now - lastTime.current < 2000) return
+              lastCode.current = code
+              lastTime.current = now
+              onDetected(code)
+            }
+            if (err && !(err instanceof NotFoundException)) {
+              // Real error, not just "no barcode in frame"
+              console.error('Scan error:', err)
+            }
           }
         )
-      } catch (err: any) {
-        if (!stopped) {
-          setError(err.message || 'Camera nao disponivel')
+      } catch (e: any) {
+        if (stopped) return
+        // If exact: environment fails (desktop/iOS), retry with ideal
+        if (exactFacing) {
+          console.warn('Exact environment failed, falling back to ideal')
+          await startScan(false)
+        } else {
+          setError(e.message || 'Camera nao disponivel')
         }
       }
     }
 
-    start()
+    startScan(true)
 
     return () => {
       stopped = true
@@ -83,24 +105,16 @@ export default function BarcodeScanner({ onDetected, active }: Props) {
         autoPlay
       />
 
-      {/* Scan overlay */}
       {active && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          {/* Darkened edges */}
           <div className="absolute inset-0 bg-black/40" />
 
-          {/* Clear scan area */}
           <div className="relative w-64 h-40 z-10">
-            {/* Cut out the center */}
             <div className="absolute inset-0 border-2 border-white/30 rounded-xl" />
-
-            {/* Green corner brackets */}
-            <div className="absolute top-0 left-0 w-6 h-6 border-t-3 border-l-3 border-green-500 rounded-tl-lg" style={{ borderTopWidth: 3, borderLeftWidth: 3 }} />
-            <div className="absolute top-0 right-0 w-6 h-6 border-t-3 border-r-3 border-green-500 rounded-tr-lg" style={{ borderTopWidth: 3, borderRightWidth: 3 }} />
-            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-3 border-l-3 border-green-500 rounded-bl-lg" style={{ borderBottomWidth: 3, borderLeftWidth: 3 }} />
-            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-3 border-r-3 border-green-500 rounded-br-lg" style={{ borderBottomWidth: 3, borderRightWidth: 3 }} />
-
-            {/* Animated scan line */}
+            <div className="absolute top-0 left-0 w-6 h-6 rounded-tl-lg" style={{ borderTop: '3px solid #22c55e', borderLeft: '3px solid #22c55e' }} />
+            <div className="absolute top-0 right-0 w-6 h-6 rounded-tr-lg" style={{ borderTop: '3px solid #22c55e', borderRight: '3px solid #22c55e' }} />
+            <div className="absolute bottom-0 left-0 w-6 h-6 rounded-bl-lg" style={{ borderBottom: '3px solid #22c55e', borderLeft: '3px solid #22c55e' }} />
+            <div className="absolute bottom-0 right-0 w-6 h-6 rounded-br-lg" style={{ borderBottom: '3px solid #22c55e', borderRight: '3px solid #22c55e' }} />
             <div className="absolute left-2 right-2 h-0.5 bg-green-500/80 rounded-full animate-scan" />
           </div>
 
