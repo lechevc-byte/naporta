@@ -26,7 +26,6 @@
   animation: cart-bounce 0.3s ease-out;
 }
 
-/* Scan line animation */
 @keyframes scan-line {
   0% { top: 10%; }
   50% { top: 85%; }
@@ -36,20 +35,31 @@
   animation: scan-line 2s ease-in-out infinite;
 }
 
-/* Product grid — explicit, no Tailwind ambiguity */
+/* Product grid — same card size as promo carousel (160px) */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
-@media (min-width: 640px) {
+@media (min-width: 480px) {
   .product-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (min-width: 640px) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+}
+@media (min-width: 900px) {
+  .product-grid {
+    grid-template-columns: repeat(5, 1fr);
     gap: 12px;
   }
 }
-@media (min-width: 1024px) {
+@media (min-width: 1100px) {
   .product-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
   }
 }
