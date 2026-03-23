@@ -3,10 +3,12 @@ export interface Product {
   name: string
   description: string | null
   price: number
+  original_price: number | null
   image_url: string | null
   barcode: string | null
   category: string
   in_stock: boolean
+  is_popular: boolean
   unit: string
   created_at: string
 }
@@ -36,5 +38,7 @@ export interface Order {
   total: number
   status: 'pending' | 'confirmed' | 'shopping' | 'delivering' | 'delivered'
   notes: string | null
+  delivery_slot: string | null
+  delivery_fee: number
   created_at: string
 }
