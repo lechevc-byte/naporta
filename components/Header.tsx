@@ -6,23 +6,25 @@ import { useCustomerStore } from '@/lib/store/customer'
 import { useEffect, useState, useRef } from 'react'
 
 export default function Header() {
-  const totalItems = useCartStore((s) => s.totalItems)
+  // Subscribe to items array directly so component re-renders on every change
+  const items = useCartStore((s) => s.items)
   const customer = useCustomerStore((s) => s.customer)
   const [mounted, setMounted] = useState(false)
   const [bouncing, setBouncing] = useState(false)
   const prev = useRef(0)
 
   useEffect(() => setMounted(true), [])
-  const count = mounted ? totalItems() : 0
+
+  const count = mounted ? items.reduce((sum, i) => sum + i.quantity, 0) : 0
 
   useEffect(() => {
-    if (count > prev.current && prev.current > 0) {
+    if (mounted && count > prev.current) {
       setBouncing(true)
       const t = setTimeout(() => setBouncing(false), 300)
       return () => clearTimeout(t)
     }
     prev.current = count
-  }, [count])
+  }, [count, mounted])
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">

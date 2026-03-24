@@ -6,11 +6,11 @@ import { formatCVE } from '@/lib/utils'
 import type { Order } from '@/types'
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  pending: { label: 'Pendente', color: 'bg-yellow-100 text-yellow-800' },
-  confirmed: { label: 'Confirmado', color: 'bg-blue-100 text-blue-800' },
-  shopping: { label: 'A fazer compras', color: 'bg-orange-100 text-orange-800' },
-  delivering: { label: 'A caminho', color: 'bg-purple-100 text-purple-800' },
-  delivered: { label: 'Entregue', color: 'bg-green-100 text-green-800' },
+  pending: { label: 'Encomenda recebida', color: 'bg-yellow-100 text-yellow-800' },
+  confirmed: { label: 'Em preparacao', color: 'bg-blue-100 text-blue-800' },
+  shopping: { label: 'Compras em curso', color: 'bg-orange-100 text-orange-800' },
+  delivering: { label: 'Chauffeur em trajeto', color: 'bg-purple-100 text-purple-800' },
+  delivered: { label: 'Encomenda entregue', color: 'bg-green-100 text-green-800' },
 }
 
 export default function OrderStatus({ order: initialOrder }: { order: Order }) {

@@ -8,7 +8,7 @@ import { formatCVE } from '@/lib/utils'
 import AdminGuard from '@/components/AdminGuard'
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'shopping', 'delivering', 'delivered'] as const
-const STATUS_LABELS: Record<string, string> = { pending: 'Pendente', confirmed: 'Confirmado', shopping: 'A comprar', delivering: 'A entregar', delivered: 'Entregue' }
+const STATUS_LABELS: Record<string, string> = { pending: 'Recebida', confirmed: 'Em preparacao', shopping: 'Compras em curso', delivering: 'Chauffeur em trajeto', delivered: 'Entregue' }
 const STATUS_COLORS: Record<string, string> = { pending: 'bg-yellow-100 text-yellow-800', confirmed: 'bg-blue-100 text-blue-800', shopping: 'bg-orange-100 text-orange-800', delivering: 'bg-purple-100 text-purple-800', delivered: 'bg-green-100 text-green-800' }
 
 export default function AdminPage() {
