@@ -60,24 +60,23 @@ export default function ProductCard({ product }: { product: Product }) {
           <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#e5e7eb' }} />
         )}
 
-        {/* Badges */}
-        <div style={{ position: 'absolute', top: 6, left: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {hasPromo && (
-            <span style={{ background: '#ef4444', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4 }}>
-              -{discount}%
-            </span>
-          )}
-          {product.is_popular && !hasPromo && (
-            <span style={{ background: '#2563eb', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4 }}>
-              Popular
-            </span>
-          )}
-          {outOfStock && (
-            <span style={{ background: '#525252', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4 }}>
-              Esgotado
-            </span>
-          )}
-        </div>
+        {/* Badge promo — top left */}
+        {hasPromo && (
+          <span style={{ position: 'absolute', top: 6, left: 6, background: '#ef4444', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4 }}>
+            -{discount}%
+          </span>
+        )}
+        {outOfStock && (
+          <span style={{ position: 'absolute', top: 6, left: 6, background: '#525252', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4 }}>
+            Esgotado
+          </span>
+        )}
+        {/* Badge popular — top right */}
+        {product.is_popular && (
+          <span style={{ position: 'absolute', top: 6, right: 6, background: '#2563eb', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4 }}>
+            Popular
+          </span>
+        )}
       </div>
 
       {/* Content */}

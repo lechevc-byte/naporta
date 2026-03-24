@@ -19,11 +19,13 @@ const CATEGORIES = [
 ]
 
 type SortKey = 'default' | 'price-asc' | 'price-desc' | 'name' | 'promo'
+type QuickFilter = 'none' | 'promo' | 'popular'
 
 export default function HomePage({ products }: { products: Product[] }) {
   const [category, setCategory] = useState('Todos')
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<SortKey>('default')
+  const [quickFilter, setQuickFilter] = useState<QuickFilter>('none')
   const catalogRef = useRef<HTMLDivElement>(null)
 
   const populares = useMemo(() => products.filter((p) => p.is_popular), [products])
@@ -33,7 +35,10 @@ export default function HomePage({ products }: { products: Product[] }) {
     let result = products.filter((p) => {
       const matchCat = category === 'Todos' || p.category === category
       const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
-      return matchCat && matchSearch
+      const matchQuick = quickFilter === 'none'
+        || (quickFilter === 'promo' && p.original_price && p.original_price > p.price)
+        || (quickFilter === 'popular' && p.is_popular)
+      return matchCat && matchSearch && matchQuick
     })
 
     switch (sort) {
@@ -48,7 +53,7 @@ export default function HomePage({ products }: { products: Product[] }) {
     }
 
     return result
-  }, [products, category, search, sort])
+  }, [products, category, search, sort, quickFilter])
 
   function selectCategory(filter: string) {
     setCategory(filter)
@@ -175,12 +180,35 @@ export default function HomePage({ products }: { products: Product[] }) {
             <option value="promo">Promocoes primeiro</option>
           </select>
         </div>
-        <p className="text-sm text-gray-400 mb-6">
+        <p className="text-sm text-gray-400 mb-4">
           {filtered.length} produto{filtered.length !== 1 ? 's' : ''}
           {category !== 'Todos' && (
             <> — <button onClick={() => setCategory('Todos')} className="text-green-600 hover:underline">Ver todos</button></>
           )}
         </p>
+
+        {/* Quick filters */}
+        <div className="flex gap-2 mb-5">
+          {[
+            { key: 'none' as QuickFilter, label: 'Todos' },
+            { key: 'promo' as QuickFilter, label: 'Em promo' },
+            { key: 'popular' as QuickFilter, label: 'Populares' },
+          ].map((f) => (
+            <button key={f.key} onClick={() => setQuickFilter(quickFilter === f.key ? 'none' : f.key)}
+              style={{
+                padding: '6px 14px',
+                borderRadius: 999,
+                fontSize: 13,
+                fontWeight: 600,
+                border: quickFilter === f.key ? '2px solid #16a34a' : '1px solid #e5e7eb',
+                background: quickFilter === f.key ? '#f0fdf4' : '#fff',
+                color: quickFilter === f.key ? '#16a34a' : '#374151',
+                cursor: 'pointer',
+              }}>
+              {f.key === 'promo' && '🏷 '}{f.key === 'popular' && '🔥 '}{f.label}
+            </button>
+          ))}
+        </div>
 
         {/* Search */}
         <div className="relative mb-5">
