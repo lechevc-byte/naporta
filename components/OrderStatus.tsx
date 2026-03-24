@@ -8,8 +8,8 @@ import type { Order } from '@/types'
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   pending: { label: 'Encomenda recebida', color: 'bg-yellow-100 text-yellow-800' },
   confirmed: { label: 'Em preparacao', color: 'bg-blue-100 text-blue-800' },
-  shopping: { label: 'Compras em curso', color: 'bg-orange-100 text-orange-800' },
-  delivering: { label: 'Chauffeur em trajeto', color: 'bg-purple-100 text-purple-800' },
+  shopping: { label: 'Encomenda expedida', color: 'bg-orange-100 text-orange-800' },
+  delivering: { label: 'Motorista a caminho', color: 'bg-purple-100 text-purple-800' },
   delivered: { label: 'Encomenda entregue', color: 'bg-green-100 text-green-800' },
 }
 

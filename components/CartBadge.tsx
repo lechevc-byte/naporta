@@ -5,14 +5,14 @@ import { useCartStore } from '@/lib/store/cart'
 import { useEffect, useState, useRef } from 'react'
 
 export default function CartBadge() {
-  const totalItems = useCartStore((s) => s.totalItems)
+  const items = useCartStore((s) => s.items)
   const [mounted, setMounted] = useState(false)
   const [bouncing, setBouncing] = useState(false)
   const prevCount = useRef(0)
 
   useEffect(() => setMounted(true), [])
 
-  const count = mounted ? totalItems() : 0
+  const count = mounted ? items.reduce((sum, i) => sum + i.quantity, 0) : 0
 
   useEffect(() => {
     if (count > prevCount.current && prevCount.current > 0) {

@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { useCartStore } from '@/lib/store/cart'
 import { useCustomerStore } from '@/lib/store/customer'
 import { createClient } from '@/lib/supabase/client'
 import { formatCVE } from '@/lib/utils'
+
+const DeliveryMap = dynamic(() => import('@/components/DeliveryMap'), { ssr: false })
 
 const PRAIA_ZONES = [
   'Achada Santo Antonio', 'Palmarejo', 'Plateau', 'Fazenda', 'Terra Branca',
@@ -198,6 +201,9 @@ export default function CartPage() {
                   </div>
                 )}
               </div>
+              <DeliveryMap
+                onLocationSelect={(_lat, _lng, addr) => setForm((f) => ({ ...f, address: addr }))}
+              />
               <textarea placeholder="Notas (opcional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className={`${inputClass} resize-none`} />
               {error && <p className="text-red-500 text-sm">{error}</p>}
               <button type="submit" disabled={submitting || belowMinimum}
