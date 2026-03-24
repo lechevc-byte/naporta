@@ -6,6 +6,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { createClient } from '@/lib/supabase/client'
 import { useCustomerStore } from '@/lib/store/customer'
+import { useCartStore } from '@/lib/store/cart'
 import { formatCVE } from '@/lib/utils'
 import { Order } from '@/types'
 
@@ -169,6 +170,40 @@ export default function ContaPage() {
             </div>
           )}
 
+          {/* Reorder last order */}
+          {orders.length > 0 && (
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                <h3 className="font-bold text-green-800">Ultima encomenda</h3>
+              </div>
+              <div className="text-sm text-green-700 mb-3">
+                {orders[0].items.map((item, i) => (
+                  <span key={i}>{i > 0 ? ', ' : ''}{item.quantity}x {item.name}</span>
+                ))}
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-green-800">{formatCVE(orders[0].total)}</span>
+                <button
+                  onClick={() => {
+                    const addItem = useCartStore.getState().addItem
+                    const clearCart = useCartStore.getState().clearCart
+                    clearCart()
+                    for (const item of orders[0].items) {
+                      for (let q = 0; q < item.quantity; q++) {
+                        addItem({ product_id: item.product_id, name: item.name, price: item.price, image_url: null, unit: '' })
+                      }
+                    }
+                    router.push('/cart')
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-2.5 rounded-full text-sm transition-colors"
+                >
+                  Repetir encomenda
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Order history */}
           <h2 className="text-lg font-bold text-gray-900 mb-4">As minhas encomendas</h2>
           {orders.length === 0 ? (
@@ -181,20 +216,39 @@ export default function ContaPage() {
               {orders.map((order) => {
                 const s = STATUS_LABELS[order.status] || STATUS_LABELS.pending
                 return (
-                  <a key={order.id} href={`/order/${order.id}`}
-                    className="block bg-white rounded-2xl p-4 border border-gray-100 hover:border-green-200 transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-mono text-xs text-gray-400">#{order.id.slice(0, 8).toUpperCase()}</span>
-                      <span className={`text-xs font-semibold px-2 py-1 rounded-full ${s.color}`}>{s.label}</span>
-                    </div>
-                    <p className="text-sm text-gray-600">{order.items.length} produto(s)</p>
-                    <div className="flex justify-between items-center mt-2">
-                      <span className="text-xs text-gray-400">
-                        {new Date(order.created_at).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      <span className="font-bold text-sm">{formatCVE(order.total)}</span>
-                    </div>
-                  </a>
+                  <div key={order.id} className="bg-white rounded-2xl p-4 border border-gray-100">
+                    <a href={`/order/${order.id}`} className="block hover:opacity-80">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-mono text-xs text-gray-400">#{order.id.slice(0, 8).toUpperCase()}</span>
+                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${s.color}`}>{s.label}</span>
+                      </div>
+                      <p className="text-sm text-gray-600 line-clamp-1">
+                        {order.items.map((it) => `${it.quantity}x ${it.name}`).join(', ')}
+                      </p>
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="text-xs text-gray-400">
+                          {new Date(order.created_at).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                        <span className="font-bold text-sm">{formatCVE(order.total)}</span>
+                      </div>
+                    </a>
+                    <button
+                      onClick={() => {
+                        const addItem = useCartStore.getState().addItem
+                        const clearCart = useCartStore.getState().clearCart
+                        clearCart()
+                        for (const item of order.items) {
+                          for (let q = 0; q < item.quantity; q++) {
+                            addItem({ product_id: item.product_id, name: item.name, price: item.price, image_url: null, unit: '' })
+                          }
+                        }
+                        router.push('/cart')
+                      }}
+                      className="mt-3 w-full py-2 bg-gray-100 hover:bg-green-50 text-sm font-medium text-gray-700 hover:text-green-700 rounded-xl transition-colors"
+                    >
+                      Repetir esta encomenda
+                    </button>
+                  </div>
                 )
               })}
             </div>
