@@ -124,23 +124,6 @@ export default function HomePage({ products }: { products: Product[] }) {
         </section>
       )}
 
-      {/* ── Populares ── */}
-      {populares.length > 0 && category === 'Todos' && !search && (
-        <section className="max-w-6xl mx-auto px-4 pb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-xl">🔥</span>
-            <h2 className="text-lg font-bold text-gray-900">Mais populares</h2>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {populares.map((p) => (
-              <div key={p.id} className="flex-shrink-0 w-[160px]">
-                <ProductCard product={p} />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* ── Como funciona ── */}
       <section className="bg-green-50/60 border-y border-green-100/50">
         <div className="max-w-6xl mx-auto px-4 py-16">

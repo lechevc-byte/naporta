@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { useCartStore } from '@/lib/store/cart'
+import { useCustomerStore } from '@/lib/store/customer'
 import { createClient } from '@/lib/supabase/client'
 import { formatCVE } from '@/lib/utils'
 
@@ -21,7 +22,22 @@ const DELIVERY_FEE = 200
 export default function CartPage() {
   const router = useRouter()
   const { items, updateQuantity, removeItem, totalPrice, clearCart } = useCartStore()
+  const customer = useCustomerStore((s) => s.customer)
   const [form, setForm] = useState({ name: '', phone: '', address: '', notes: '' })
+  const [prefilled, setPrefilled] = useState(false)
+
+  // Auto-fill from customer profile
+  useEffect(() => {
+    if (customer && !prefilled) {
+      setForm((f) => ({
+        name: f.name || customer.name,
+        phone: f.phone || customer.phone,
+        address: f.address || (customer.address ? `${customer.address}${customer.zone ? ', ' + customer.zone : ''}` : ''),
+        notes: f.notes,
+      }))
+      setPrefilled(true)
+    }
+  }, [customer, prefilled])
   const [deliverySlot, setDeliverySlot] = useState('manha')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -50,6 +66,7 @@ export default function CartPage() {
           total,
           delivery_slot: deliverySlot,
           delivery_fee: deliveryFee,
+          customer_id: customer?.id || null,
           status: 'pending',
         })
         .select('id')

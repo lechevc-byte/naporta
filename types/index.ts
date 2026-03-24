@@ -34,11 +34,21 @@ export interface Order {
   customer_name: string
   customer_phone: string
   customer_address: string
+  customer_id: string | null
   items: OrderItem[]
   total: number
   status: 'pending' | 'confirmed' | 'shopping' | 'delivering' | 'delivered'
   notes: string | null
   delivery_slot: string | null
   delivery_fee: number
+  created_at: string
+}
+
+export interface Customer {
+  id: string
+  phone: string
+  name: string
+  address: string | null
+  zone: string | null
   created_at: string
 }
