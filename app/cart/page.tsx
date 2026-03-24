@@ -8,6 +8,12 @@ import { useCartStore } from '@/lib/store/cart'
 import { createClient } from '@/lib/supabase/client'
 import { formatCVE } from '@/lib/utils'
 
+const PRAIA_ZONES = [
+  'Achada Santo Antonio', 'Palmarejo', 'Plateau', 'Fazenda', 'Terra Branca',
+  'Prainha', 'Achada Grande', 'Tira Chapeu', 'Varzea', 'Calabaceira',
+  'Achada Sao Filipe', 'Cidadela', 'Gamboa', 'Chã de Areia', 'Quebra Canela',
+]
+
 const MIN_ORDER = 500
 const FREE_DELIVERY_ABOVE = 2000
 const DELIVERY_FEE = 200
@@ -19,6 +25,7 @@ export default function CartPage() {
   const [deliverySlot, setDeliverySlot] = useState('manha')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [showZones, setShowZones] = useState(false)
 
   const subtotal = totalPrice()
   const deliveryFee = subtotal >= FREE_DELIVERY_ABOVE ? 0 : DELIVERY_FEE
@@ -156,7 +163,24 @@ export default function CartPage() {
               <h3 className="text-sm font-bold text-gray-900 mb-1">Dados de entrega</h3>
               <input required type="text" placeholder="O seu nome" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputClass} />
               <input required type="tel" placeholder="Numero de telefone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inputClass} />
-              <input required type="text" placeholder="Morada de entrega" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className={inputClass} />
+              {/* Address with neighborhood suggestions */}
+              <div className="relative">
+                <input required type="text" placeholder="Morada de entrega (ex: Palmarejo, Rua 1)" value={form.address}
+                  onChange={(e) => setForm({ ...form, address: e.target.value })}
+                  onFocus={() => setShowZones(true)}
+                  className={inputClass} />
+                {showZones && !form.address && (
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 max-h-48 overflow-y-auto">
+                    {PRAIA_ZONES.map((z) => (
+                      <button key={z} type="button"
+                        onClick={() => { setForm({ ...form, address: z + ', ' }); setShowZones(false) }}
+                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
+                        {z}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <textarea placeholder="Notas (opcional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className={`${inputClass} resize-none`} />
               {error && <p className="text-red-500 text-sm">{error}</p>}
               <button type="submit" disabled={submitting || belowMinimum}
