@@ -11,6 +11,21 @@ const CATEGORIES = [
   'Mercearia doce', 'Lacticínios e queijos', 'Higiene e beleza', 'Limpeza e casa', 'Bebé',
 ]
 
+const SUPERMARKETS = [
+  { id: 'all', name: 'Todos', logo: '🏪' },
+  { id: 'calu', name: 'Supermercado Calú', logo: '🏪' },
+  { id: 'minipreco', name: 'Minipreço Palmarejo', logo: '🛒' },
+  { id: 'feijoo', name: 'Supermercado Feijóo', logo: '🏬' },
+  { id: 'felicidade', name: 'Casa Felicidade', logo: '🛍️' },
+  { id: 'fragata', name: 'Fragata Supermercado', logo: '🏪' },
+]
+
+// Simulated mapping: product index % supermarkets (excluding 'all') to assign each product a store
+function getProductStore(productIndex: number): string {
+  const stores = SUPERMARKETS.filter(s => s.id !== 'all')
+  return stores[productIndex % stores.length].id
+}
+
 export default function AdminProductsPage() {
   return <AdminGuard><AdminProductsContent /></AdminGuard>
 }
@@ -21,6 +36,7 @@ function AdminProductsContent() {
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Product | null>(null)
   const [searchQ, setSearchQ] = useState('')
+  const [selectedStore, setSelectedStore] = useState('all')
   const [newProduct, setNewProduct] = useState({ name: '', price: '', original_price: '', category: 'Mercearia salgada', unit: 'unidade', image_url: '', is_popular: false })
 
   useEffect(() => { loadProducts() }, [])
@@ -81,7 +97,11 @@ function AdminProductsContent() {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full" /></div>
 
-  const filtered = products.filter((p) => p.name.toLowerCase().includes(searchQ.toLowerCase()))
+  const filtered = products.filter((p, i) => {
+    const matchSearch = p.name.toLowerCase().includes(searchQ.toLowerCase())
+    const matchStore = selectedStore === 'all' || getProductStore(i) === selectedStore
+    return matchSearch && matchStore
+  })
   const inputClass = "px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
 
   return (
@@ -101,6 +121,21 @@ function AdminProductsContent() {
         {/* Search */}
         <input placeholder="Procurar produto..." value={searchQ} onChange={(e) => setSearchQ(e.target.value)}
           className="w-full mb-4 px-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30" />
+
+        {/* Supermarket filter */}
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+          {SUPERMARKETS.map((sm) => {
+            const count = sm.id === 'all' ? products.length : products.filter((_, i) => getProductStore(i) === sm.id).length
+            return (
+              <button key={sm.id} onClick={() => setSelectedStore(sm.id)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${selectedStore === sm.id ? 'bg-green-600 text-white shadow-sm' : 'bg-white text-gray-600 border border-gray-200 hover:border-green-300'}`}>
+                <span>{sm.logo}</span>
+                <span>{sm.name}</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${selectedStore === sm.id ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-500'}`}>{count}</span>
+              </button>
+            )
+          })}
+        </div>
 
         {/* Add form */}
         {showForm && (
@@ -166,13 +201,17 @@ function AdminProductsContent() {
                 <tr>
                   <th className="text-left px-4 py-3 font-medium text-gray-500">Produto</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-500 hidden sm:table-cell">Categoria</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500 hidden md:table-cell">Supermercado</th>
                   <th className="text-right px-4 py-3 font-medium text-gray-500">Preco</th>
                   <th className="text-center px-4 py-3 font-medium text-gray-500">Stock</th>
                   <th className="text-center px-4 py-3 font-medium text-gray-500 w-20">Acoes</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {filtered.map((p) => (
+                {filtered.map((p) => {
+                  const pIndex = products.findIndex(x => x.id === p.id)
+                  const storeName = SUPERMARKETS.find(s => s.id === getProductStore(pIndex))
+                  return (
                   <tr key={p.id} className={!p.in_stock ? 'opacity-40' : ''}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
@@ -184,11 +223,13 @@ function AdminProductsContent() {
                           <div className="flex gap-1 mt-0.5">
                             {p.is_popular && <span className="text-[9px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium">Popular</span>}
                             {p.original_price && <span className="text-[9px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-medium">Promo</span>}
+                            <span className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-medium sm:hidden">{storeName?.name}</span>
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-gray-500 hidden sm:table-cell">{p.category}</td>
+                    <td className="px-4 py-3 text-gray-500 text-xs hidden md:table-cell">{storeName?.logo} {storeName?.name}</td>
                     <td className="px-4 py-3 text-right">
                       <div>
                         {p.original_price && <span className="text-xs text-gray-400 line-through block">{formatCVE(p.original_price)}</span>}
@@ -212,7 +253,8 @@ function AdminProductsContent() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  )
+                })}
               </tbody>
             </table>
           </div>
