@@ -44,6 +44,14 @@ const RECENT_ACTIVITY = [
   { time: '10:15', text: 'Encomenda #C7D8 confirmada — Supermercado Calú', type: 'order' },
 ]
 
+const FAKE_ORDERS: Order[] = [
+  { id: 'a3f2b1c4-1111-4aaa-bbbb-000000000001', customer_name: 'Ana Silva', customer_phone: '+238 991 2345', customer_address: 'Fazenda, Rua 5 de Julho, nº 12', customer_id: null, items: [{ product_id: '1', name: 'Água Trindade 1.5L', price: 150, quantity: 3 }, { product_id: '2', name: 'Cerveja Strela 33cl', price: 200, quantity: 6 }, { product_id: '3', name: 'Arroz Cigala 1kg', price: 180, quantity: 2 }], total: 2010, status: 'delivering', notes: 'Tocar à campainha 2x', delivery_slot: 'manha', delivery_fee: 200, created_at: new Date().toISOString() },
+  { id: 'b1c4d7e8-2222-4bbb-cccc-000000000002', customer_name: 'Pedro Lopes', customer_phone: '+238 987 1122', customer_address: 'Achada Santo António, perto da farmácia', customer_id: null, items: [{ product_id: '4', name: 'Leite Mimosa 1L', price: 200, quantity: 2 }, { product_id: '5', name: 'Pão de forma', price: 280, quantity: 1 }, { product_id: '6', name: 'Manteiga Mimosa', price: 350, quantity: 1 }], total: 1030, status: 'shopping', notes: null, delivery_slot: 'manha', delivery_fee: 200, created_at: new Date(Date.now() - 1800000).toISOString() },
+  { id: 'c7d8e9f0-3333-4ccc-dddd-000000000003', customer_name: 'Maria Fernandes', customer_phone: '+238 955 6789', customer_address: 'Plateau, Av. Amílcar Cabral, 3º andar', customer_id: null, items: [{ product_id: '7', name: 'Óleo Fula 1L', price: 250, quantity: 1 }, { product_id: '8', name: 'Massa Esparguete 500g', price: 120, quantity: 3 }, { product_id: '9', name: 'Atum em lata', price: 180, quantity: 4 }, { product_id: '10', name: 'Tomate pelado', price: 150, quantity: 2 }], total: 1610, status: 'confirmed', notes: 'Ligar antes de entregar', delivery_slot: 'tarde', delivery_fee: 200, created_at: new Date(Date.now() - 3600000).toISOString() },
+  { id: 'd8e9f0a1-4444-4ddd-eeee-000000000004', customer_name: 'José Tavares', customer_phone: '+238 976 4321', customer_address: 'Palmarejo, condomínio Sol e Mar, bloco B', customer_id: null, items: [{ product_id: '11', name: 'Fraldas Dodot T3', price: 1200, quantity: 1 }, { product_id: '12', name: 'Toalhitas Dodot', price: 450, quantity: 2 }, { product_id: '13', name: 'Leite Nan 1', price: 980, quantity: 1 }], total: 3080, status: 'pending', notes: null, delivery_slot: 'tarde', delivery_fee: 0, created_at: new Date(Date.now() - 300000).toISOString() },
+  { id: 'e9f0a1b2-5555-4eee-ffff-000000000005', customer_name: 'Carla Monteiro', customer_phone: '+238 912 8765', customer_address: 'Terra Branca, Rua da Escola', customer_id: null, items: [{ product_id: '14', name: 'Detergente Fairy', price: 320, quantity: 1 }, { product_id: '15', name: 'Lixívia 2L', price: 180, quantity: 1 }, { product_id: '16', name: 'Papel higiénico 12 rolos', price: 650, quantity: 1 }], total: 1350, status: 'delivered', notes: 'Deixar com o porteiro', delivery_slot: 'manha', delivery_fee: 200, created_at: new Date(Date.now() - 7200000).toISOString() },
+]
+
 const MONTHLY_STATS = {
   totalRevenue: 485000,
   totalOrders: 107,
@@ -329,15 +337,18 @@ function FinanceRow({ label, value, bold, negative, green }: { label: string; va
 // ==================== ORDERS TAB ====================
 
 function OrdersTab({ orders, selected, setSelected, updateStatus }: { orders: Order[]; selected: Order | null; setSelected: (o: Order | null) => void; updateStatus: (id: string, s: string) => void }) {
+  const allOrders = [...orders, ...FAKE_ORDERS].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const isFake = (id: string) => FAKE_ORDERS.some(o => o.id === id)
+
   return (
     <main className="max-w-7xl mx-auto px-4 py-6">
-      <h2 className="text-lg font-bold text-[#1A1A1A] mb-4">Encomendas de hoje ({orders.length})</h2>
-      {orders.length === 0 ? (
+      <h2 className="text-lg font-bold text-[#1A1A1A] mb-4">Encomendas de hoje ({allOrders.length})</h2>
+      {allOrders.length === 0 ? (
         <p className="text-gray-400 text-center py-12">Nenhuma encomenda hoje</p>
       ) : (
         <div className="grid lg:grid-cols-2 gap-4">
           <div className="space-y-3">
-            {orders.map((order) => (
+            {allOrders.map((order) => (
               <button key={order.id} onClick={() => setSelected(order)}
                 className={`w-full text-left bg-white rounded-2xl p-4 border-2 transition-all ${selected?.id === order.id ? 'border-brand shadow-md' : 'border-transparent shadow-sm'}`}>
                 <div className="flex items-center justify-between mb-2">
